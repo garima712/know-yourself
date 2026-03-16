@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Test</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #f0f0f0; }
+        .test { margin: 20px 0; padding: 15px; background: white; border-radius: 5px; }
+        .success { color: green; }
+        .error { color: red; }
+        pre { background: #f5f5f5; padding: 10px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>Know Yourself API Test</h1>
+    <button onclick="testAPI()">Test API Connection</button>
+    <div id="results"></div>
+
+    <script>
+        async function testAPI() {
+            const results = document.getElementById('results');
+            results.innerHTML = '<p>Testing...</p>';
+
+            try {
+                // Test 1: Get quiz sets
+                console.log('Testing /api/quiz/sets...');
+                const response1 = await fetch('http://localhost:8080/api/quiz/sets');
+                const data1 = await response1.json();
+                
+                results.innerHTML += `
+                    <div class="test">
+                        <h3 class="success">✓ GET /api/quiz/sets - Success</h3>
+                        <p>Found ${data1.data.length} quizzes</p>
+                        <pre>${JSON.stringify(data1.data[0], null, 2)}</pre>
+                    </div>
+                `;
+
+                // Test 2: Start quiz
+                console.log('Testing /api/quiz/start...');
+                const response2 = await fetch('http://localhost:8080/api/quiz/start', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        quizKey: 'hidden_genius',
+                        userAgent: navigator.userAgent,
+                        deviceType: 'desktop',
+                        referrerUrl: window.location.href
+                    })
+                });
+                const data2 = await response2.json();
+                
+                results.innerHTML += `
+                    <div class="test">
+                        <h3 class="success">✓ POST /api/quiz/start - Success</h3>
+                        <p>Session created: ${data2.data.sessionUuid}</p>
+                        <p>First question: ${data2.data.nextQuestion.questionText}</p>
+                    </div>
+                `;
+
+            } catch (error) {
+                results.innerHTML += `
+                    <div class="test">
+                        <h3 class="error">✗ API Test Failed</h3>
+                        <p>Error: ${error.message}</p>
+                        <pre>${error.stack}</pre>
+                    </div>
+                `;
+                console.error('API test error:', error);
+            }
+        }
+    </script>
+</body>
+</html>
