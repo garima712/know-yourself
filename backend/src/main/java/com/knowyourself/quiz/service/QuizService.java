@@ -40,7 +40,7 @@ public class QuizService {
     
     @Transactional
     public SessionDTO startQuiz(StartQuizRequest request, String ipAddress) {
-        QuizSet quizSet = quizSetRepository.findByQuizKey(request.getQuizKey())
+        QuizSet quizSet = quizSetRepository.findByQuizKeyForUpdate(request.getQuizKey())
                 .orElseThrow(() -> new RuntimeException("Quiz not found: " + request.getQuizKey()));
         
         // Create new session
@@ -106,6 +106,13 @@ public class QuizService {
         response.setResponseTimeSeconds(request.getResponseTimeSeconds() != null ? 
                 BigDecimal.valueOf(request.getResponseTimeSeconds()) : null);
         responseRepository.save(response);
+
+        long totalResponsesForQuestion = responseRepository.countByQuestionId(question.getId());
+        long selectedOptionResponses = responseRepository.countByQuestionIdAndOptionId(
+            question.getId(), selectedOption.getId());
+        int selectedOptionPercent = totalResponsesForQuestion > 0
+            ? (int) Math.round((selectedOptionResponses * 100.0) / totalResponsesForQuestion)
+            : selectedOption.getPersonalityRarityPercent();
         
         // Calculate next question
         int nextQuestionOrder = question.getQuestionOrder() + 1;
@@ -133,7 +140,8 @@ public class QuizService {
         answerResponse.setIsCompleted(isCompleted);
         answerResponse.setPersonalityTrait(selectedOption.getPersonalityTrait());
         answerResponse.setPersonalityDescription(selectedOption.getPersonalityDescription());
-        answerResponse.setPersonalityRarityPercent(selectedOption.getPersonalityRarityPercent());
+        answerResponse.setPersonalityRarityPercent(selectedOptionPercent);
+        answerResponse.setResponseSampleSize((int) totalResponsesForQuestion);
         answerResponse.setEmpowermentMessage(selectedOption.getEmpowermentMessage());
         answerResponse.setInsightCategory(selectedOption.getInsightCategory());
         

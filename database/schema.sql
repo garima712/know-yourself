@@ -206,7 +206,7 @@ JOIN questions qu ON r.question_id = qu.id
 JOIN quiz_sets qs ON qu.quiz_set_id = qs.id
 JOIN sessions s ON r.session_id = s.id
 WHERE s.is_completed = TRUE
-GROUP BY q.quiz_set_id, qs.title, qu.question_text, o.option_text, o.option_emoji, o.insight_category, r.question_id
+GROUP BY qu.quiz_set_id, qs.title, qu.question_text, o.option_text, o.option_emoji, o.insight_category, r.question_id
 ORDER BY selection_count DESC;
 
 COMMENT ON TABLE quiz_sets IS 'Stores different personality quiz sets';

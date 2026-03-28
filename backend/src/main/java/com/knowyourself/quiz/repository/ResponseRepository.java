@@ -14,6 +14,10 @@ public interface ResponseRepository extends JpaRepository<Response, Long> {
     List<Response> findBySessionIdOrderByQuestionOrderAsc(Long sessionId);
     
     boolean existsBySessionIdAndQuestionId(Long sessionId, Long questionId);
+
+       long countByQuestionId(Long questionId);
+
+       long countByQuestionIdAndOptionId(Long questionId, Long optionId);
     
     @Query("SELECT o.insightCategory AS category, COUNT(r) AS count FROM Response r " +
            "JOIN r.option o WHERE r.session.quizSet.id = :quizSetId AND r.session.isCompleted = true " +

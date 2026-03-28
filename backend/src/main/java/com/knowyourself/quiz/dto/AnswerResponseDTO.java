@@ -15,6 +15,7 @@ public class AnswerResponseDTO {
     private String personalityTrait;
     private String personalityDescription;
     private Integer personalityRarityPercent;
+    private Integer responseSampleSize;
     private String empowermentMessage;
     private String insightCategory;
     private QuestionDTO nextQuestion;
