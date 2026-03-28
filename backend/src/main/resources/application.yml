@@ -46,6 +46,8 @@ logging:
 
 # Application specific properties
 app:
+  admin:
+    key: ${ADMIN_KEY:knowyourself@admin2026}
   cors:
     allowed-origins: ${CORS_ORIGINS:http://localhost:3000,http://localhost:3001}
     allowed-methods: GET,POST,PUT,DELETE,OPTIONS

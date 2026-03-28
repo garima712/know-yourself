@@ -32,6 +32,11 @@ apiClient.interceptors.response.use(
     }
 );
 
+const getAdminHeaders = () => {
+    const key = sessionStorage.getItem('adminKey');
+    return key ? { 'X-Admin-Key': key } : {};
+};
+
 const apiService = {
     // Quiz APIs
     getAllQuizSets: async () => {
@@ -70,19 +75,26 @@ const apiService = {
         return response.data;
     },
 
-    // Analytics APIs
+    // Analytics APIs (require X-Admin-Key header)
     getAllAnalytics: async () => {
-        const response = await apiClient.get('/analytics/all');
+        const response = await apiClient.get('/analytics/all', { headers: getAdminHeaders() });
         return response.data;
     },
 
     getQuizAnalytics: async (quizKey) => {
-        const response = await apiClient.get(`/analytics/quiz/${quizKey}`);
+        const response = await apiClient.get(`/analytics/quiz/${quizKey}`, { headers: getAdminHeaders() });
         return response.data;
     },
 
     getOverallStatistics: async () => {
-        const response = await apiClient.get('/analytics/overview');
+        const response = await apiClient.get('/analytics/overview', { headers: getAdminHeaders() });
+        return response.data;
+    },
+
+    verifyAdminKey: async (key) => {
+        const response = await apiClient.get('/analytics/overview', {
+            headers: { 'X-Admin-Key': key }
+        });
         return response.data;
     }
 };

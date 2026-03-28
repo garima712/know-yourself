@@ -3,14 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import apiService from '../services/apiService';
 import { useLanguage } from '../context/LanguageContext';
 
-// ⚠️ Change this password before deploying
-const ADMIN_PASSWORD = 'knowyourself@admin2026';
-
 const AdminPage = () => {
     const { t } = useLanguage();
     const navigate = useNavigate();
     const [isAuthenticated, setIsAuthenticated] = useState(
-        () => sessionStorage.getItem('adminAuth') === 'true'
+        () => !!sessionStorage.getItem('adminKey')
     );
     const [passwordInput, setPasswordInput] = useState('');
     const [passwordError, setPasswordError] = useState('');
@@ -39,20 +36,21 @@ const AdminPage = () => {
         }
     };
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
-        if (passwordInput === ADMIN_PASSWORD) {
-            sessionStorage.setItem('adminAuth', 'true');
+        try {
+            await apiService.verifyAdminKey(passwordInput);
+            sessionStorage.setItem('adminKey', passwordInput);
             setIsAuthenticated(true);
             setPasswordError('');
-        } else {
+        } catch (err) {
             setPasswordError(t.wrongPassword);
             setPasswordInput('');
         }
     };
 
     const handleLogout = () => {
-        sessionStorage.removeItem('adminAuth');
+        sessionStorage.removeItem('adminKey');
         setIsAuthenticated(false);
         setAnalyticsData([]);
         setOverallStats(null);
