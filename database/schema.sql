@@ -191,7 +191,7 @@ GROUP BY qs.id, qs.quiz_key, qs.title, qs.total_starts, qs.total_completions;
 -- View for popular options
 CREATE OR REPLACE VIEW popular_options_view AS
 SELECT 
-    q.quiz_set_id,
+    qu.quiz_set_id,
     qs.title as quiz_title,
     qu.question_text,
     o.option_text,
